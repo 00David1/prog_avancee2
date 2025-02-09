@@ -1,0 +1,13 @@
+Distributed version of MC for PI using Java socket.
+
+usage on a localhost: 
+One terminal for programation_partager.Master
+One terminal for each programation_partager.Worker
+
+on each server terminal (programation_partager.Worker):
+make
+java programation_distribuer.WorkerSocket <port>
+
+on client terminal (programation_partager.Master):
+make
+make run
