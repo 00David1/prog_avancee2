@@ -44,23 +44,22 @@ def plot_speedup_faible(csv_file):
     # Charger les données du CSV
     df = pd.read_csv(csv_file)
 
-    # Extraire les valeurs utiles
-    threads = df['Threads']
-    durations = df['Duration']
-    ntots = df['Ntot']
+    # Calculer T(1) et Ntot(1) (référence pour le calcul du speedup)
+    T1 = df[df['Threads'] == 1]['Duration'].mean()
+    Ntot1 = df[df['Threads'] == 1]['Ntot'].mean()
 
-    # Calculer la charge totale
-    total_work = ntots.iloc[0]  # Charge de travail de la première ligne (en théorie, identique pour toutes les lignes)
+    # Calculer le speedup faible
+    df['Speedup_Faible'] = (T1 * Ntot1) / (df['Duration'] * df['Ntot'])
 
-    # Calculer le speedup pour la scalabilité faible
-    speedup_faible = durations.iloc[0] * threads / total_work
+    # Supprimer les doublons (cas où plusieurs mesures existent pour le même N)
+    df_unique = df.groupby('Threads', as_index=False).mean()
 
-    # Tracer la courbe du speedup
+    # Tracer la courbe du Speedup faible
     plt.figure(figsize=(8, 5))
-    plt.plot(threads, speedup_faible, marker='o', linestyle='-', color='b', label='Speedup mesuré')
+    plt.plot(df_unique['Threads'], df_unique['Speedup_Faible'], marker='o', linestyle='-', color='b', label='Speedup mesuré')
 
-    # Tracer la courbe idéale de speedup (devrait être proche de 1)
-    plt.plot(threads, [1] * len(threads), linestyle='--', color='r', label='Speedup idéal')
+    # Tracer la courbe idéale (Speedup = 1)
+    plt.axhline(y=1, linestyle='--', color='r', label='Speedup idéal (1)')
 
     # Ajouter des labels et une légende
     plt.xlabel("Nombre de Threads")
@@ -70,6 +69,13 @@ def plot_speedup_faible(csv_file):
     plt.grid()
     plt.show()
 
+
 # Exemple d'utilisation
-#plot_speedup_forte("data/Pi_scal_forte_G21_12c.csv")
-plot_speedup_faible("data/Pi_scal_faible_G21_12c.csv")
+
+#Assignement
+#plot_speedup_forte("data/Assignment102_scal_forte_G26_8c.csv")
+#plot_speedup_faible("data/Assignment102_scal_faible_G26_8c.csv")
+
+#Pi
+#plot_speedup_forte("data/Pi_scal_forte_G26_8c.csv")
+plot_speedup_faible("data/Pi_scal_faible_G26_8c.csv")

@@ -1,107 +1,126 @@
 package programation_distribuer;
-
 import java.io.*;
 import java.net.*;
-import java.util.Random;
-
-/** Master is a client. It makes requests to multiple workers. */
+/** Master is a client. It makes requests to numWorkers.
+ *
+ */
 public class MasterSocket {
 	static int maxServer = 8;
-	static int[] tab_port = new int[maxServer];
+	static final int[] tab_port = {25545,25546,25547,25548,25549,25550,25551,25552};
 	static String[] tab_total_workers = new String[maxServer];
 	static final String ip = "127.0.0.1";
 	static BufferedReader[] reader = new BufferedReader[maxServer];
 	static PrintWriter[] writer = new PrintWriter[maxServer];
 	static Socket[] sockets = new Socket[maxServer];
 
+
 	public static void main(String[] args) throws Exception {
-		// Paramètres Monte Carlo
-		int totalCount = 16000000; // Nombre de points par worker
-		int total = 0;
+
+		// MC parameters
+		int totalCount = 120000000; // total number of throws on a Worker
+		int total = 0; // total number of throws inside quarter of disk
 		double pi;
 
 		int numWorkers = maxServer;
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-		String s;
+		String s; // for bufferRead
 
 		System.out.println("#########################################");
 		System.out.println("# Computation of PI by MC method        #");
 		System.out.println("#########################################");
 
-		// Demande du nombre de workers
-		System.out.println("\nHow many workers for computing PI (< maxServer = " + maxServer + "): ");
-		try {
+		System.out.println("\n How many workers for computing PI (< maxServer): ");
+		try{
 			s = bufferRead.readLine();
 			numWorkers = Integer.parseInt(s);
-			if (numWorkers > maxServer) numWorkers = maxServer;
-		} catch (IOException | NumberFormatException e) {
-			System.out.println("Invalid input, using default number of workers: " + numWorkers);
+			System.out.println(numWorkers);
+		}
+		catch(IOException ioE){
+			ioE.printStackTrace();
 		}
 
-		// Demande des ports des workers
-		for (int i = 0; i < numWorkers; i++) {
-			System.out.println("Enter worker " + i + " port: ");
-			try {
+		for (int i=0; i<numWorkers; i++){
+			System.out.println("Enter worker"+ i +" port : ");
+			try{
 				s = bufferRead.readLine();
 				tab_port[i] = Integer.parseInt(s);
-			} catch (IOException | NumberFormatException e) {
-				System.out.println("Invalid port number, using default: " + (25545 + i));
-				tab_port[i] = 25545 + i;
+				System.out.println("You select " + s);
+			}
+			catch(IOException ioE){
+				ioE.printStackTrace();
 			}
 		}
 
-		// Création des connexions socket
-		for (int i = 0; i < numWorkers; i++) {
+		//create worker's socket
+		for(int i = 0 ; i < numWorkers ; i++) {
 			sockets[i] = new Socket(ip, tab_port[i]);
-			System.out.println("Connected to worker on port " + tab_port[i]);
+			System.out.println("SOCKET = " + tab_port[i]);
 
-			reader[i] = new BufferedReader(new InputStreamReader(sockets[i].getInputStream()));
-			writer[i] = new PrintWriter(new BufferedWriter(new OutputStreamWriter(sockets[i].getOutputStream())), true);
+			reader[i] = new BufferedReader( new InputStreamReader(sockets[i].getInputStream()));
+			writer[i] = new PrintWriter(new BufferedWriter(new OutputStreamWriter(sockets[i].getOutputStream())),true);
 		}
+
+		String message_to_send;
+		message_to_send = String.valueOf(totalCount/numWorkers);  // PI.java on divise par le num de worker pour paratager le travaille a chaque proc
 
 		String message_repeat = "y";
+
 		long stopTime, startTime;
 
-		while (message_repeat.equalsIgnoreCase("y")) {
-			total = 0; // Réinitialisation du total
+		while (message_repeat.equals("y")){
 
 			startTime = System.currentTimeMillis();
-
-			// Envoi du nombre de points aux workers
-			for (int i = 0; i < numWorkers; i++) {
-				writer[i].println(totalCount);
+			// initialize workers
+			for(int i = 0 ; i < numWorkers ; i++) {
+				writer[i].println(message_to_send);          // send a message to each worker
 			}
 
-			// Réception des résultats
-			for (int i = 0; i < numWorkers; i++) {
-				tab_total_workers[i] = reader[i].readLine();
+			//listen to workers's message
+			for(int i = 0 ; i < numWorkers ; i++) {
+				tab_total_workers[i] = reader[i].readLine();      // read message from server
+				System.out.println("Client sent: " + tab_total_workers[i]);
+			}
+
+			// compute PI with the result of each workers
+			for(int i = 0 ; i < numWorkers ; i++) {
 				total += Integer.parseInt(tab_total_workers[i]);
 			}
-
-			// Calcul de π
-			pi = 4.0 * total / (totalCount * numWorkers);
+			pi = 4.0 * total / totalCount / numWorkers;
 
 			stopTime = System.currentTimeMillis();
 
-			// Affichage des résultats
-			System.out.println("\nEstimated programation_partager.Pi: " + pi);
-			System.out.println("Error: " + (Math.abs((pi - Math.PI)) / Math.PI));
-			System.out.println("Total points: " + (totalCount * numWorkers));
-			System.out.println("Workers used: " + numWorkers);
-			System.out.println("Time (ms): " + (stopTime - startTime) + "\n");
+			System.out.println("\nPi : " + pi );
+			System.out.println("Error: " + (Math.abs((pi - Math.PI)) / Math.PI) +"\n");
 
-			// Demande de répétition
-			System.out.println("Repeat computation? (y/N): ");
-			try {
-				message_repeat = bufferRead.readLine();
+			System.out.println("Ntot: " + totalCount); // on ne multiplie plus le totaleCount par numWorker
+			System.out.println("Available processors: " + numWorkers);
+			System.out.println("Time Duration (ms): " + (stopTime - startTime) + "\n");
+
+			//System.out.println( (Math.abs((pi - Math.PI)) / Math.PI) +" "+ totalCount*numWorkers +" "+ numWorkers +" "+ (stopTime - startTime)); // on ne multiplie plus le totaleCount par numWorker
+
+			try (FileWriter writer = new FileWriter("data/Master_scal_faible_G26_8c.csv", true)) {
+				boolean isFileEmpty = new java.io.File("data/Master_scal_faible_G26_8c.csv").length() == 0;
+				if (isFileEmpty) {
+					writer.append("Error,Ntot,Threads,Duration\n");
+				}
+				writer.append((Math.abs((pi - Math.PI)) / Math.PI) + "," + totalCount + "," + numWorkers + "," + (stopTime - startTime) + "\n");  // on ne multiplie plus le totaleCount par numWorker
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
+			System.out.println("\n Repeat computation (y/N): ");
+			try{
+				message_repeat = bufferRead.readLine();
+				System.out.println(message_repeat);
+			}
+			catch(IOException ioE){
+				ioE.printStackTrace();
+			}
 		}
 
-		// Fermeture des connexions
-		for (int i = 0; i < numWorkers; i++) {
-			writer[i].println("END");
+		for(int i = 0 ; i < numWorkers ; i++) {
+			System.out.println("END");     // Send ending message
+			writer[i].println("END") ;
 			reader[i].close();
 			writer[i].close();
 			sockets[i].close();

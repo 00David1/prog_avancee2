@@ -19,15 +19,15 @@ public class WorkerSocket {
             }
         }
 
-        ServerSocket serverSocket = new ServerSocket(port);
+        ServerSocket s = new ServerSocket(port);
         System.out.println("Worker started on port " + port);
 
         while (true) {
-            Socket socket = serverSocket.accept();
+            Socket soc = s.accept();
             System.out.println("Connected to Master");
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(soc.getInputStream()));
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(soc.getOutputStream())), true);
 
             String message;
             while ((message = reader.readLine()) != null) {
@@ -44,16 +44,16 @@ public class WorkerSocket {
 
             reader.close();
             writer.close();
-            socket.close();
+            soc.close();
 
             if (!isRunning) break;
         }
 
-        serverSocket.close();
+        s.close();
         System.out.println("Worker shutting down.");
     }
 
-    /** Monte Carlo simulation to estimate programation_partager.Pi */
+    /** Monte Carlo simulation to estimate Pi */
     private static int computeMonteCarlo(int totalCount) {
         int inside = 0;
         Random rand = new Random();

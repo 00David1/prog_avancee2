@@ -24,7 +24,8 @@ class PiMonteCarlo {
 		this.value = 0;    // c'est pi
 	}
 	public double getPi() {
-		int nProcessors = Runtime.getRuntime().availableProcessors();
+		//int nProcessors = Runtime.getRuntime().availableProcessors();
+		int nProcessors = 12;
 		ExecutorService executor = Executors.newWorkStealingPool(nProcessors);
 		for (int i = 1; i <= nThrows; i++) {
 			Runnable worker = new MonteCarlo();
@@ -39,7 +40,8 @@ class PiMonteCarlo {
 }
 public class Assignment102 {
 	public static void main(String[] args) throws Exception {
-		int ntot = 100000;
+		int nProc = 12;
+		int ntot = 12000000;
 		PiMonteCarlo PiVal = new PiMonteCarlo(ntot);
 		long startTime = System.currentTimeMillis();
 		double value = PiVal.getPi();
@@ -48,18 +50,18 @@ public class Assignment102 {
 		System.out.println("Difference to exact value of pi: " + (value - Math.PI));
 		//System.out.println("Error: " + (value - Math.PI) / Math.PI * 100 + " %");
 		System.out.println("Error: " + (Math.abs((value - Math.PI)) / Math.PI));
-		System.out.println("Available processors: " + Runtime.getRuntime().availableProcessors());
+		System.out.println("Available processors: " + nProc);//+ Runtime.getRuntime().availableProcessors());
 		System.out.println("Time Duration: " + (stopTime - startTime) + "ms");
 		System.out.println("________________________________________________");
-		try (FileWriter writer = new FileWriter("data/Assignment102_scal_forte_G21_12c.csv", true)) {
-			boolean isFileEmpty = new java.io.File("data/Assignment102_scal_forte_G21_12c.csv").length() == 0;
+		try (FileWriter writer = new FileWriter("data/Assignment102_scal_faible_G26_8c.csv", true)) {
+			boolean isFileEmpty = new java.io.File("data/Assignment102_scal_faible_G26_8c.csv").length() == 0;
 			if (isFileEmpty) {
 				writer.append("Error,Ntot,Threads,Duration\n");
 			}
-			writer.append( (Math.abs((value - Math.PI)) / Math.PI) + "," + (ntot) + "," + Runtime.getRuntime().availableProcessors() + "," + (stopTime - startTime) + "\n");
+			writer.append( (Math.abs((value - Math.PI)) / Math.PI) + "," + (ntot) + "," + nProc + "," + (stopTime - startTime) + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Pi.main(args);
+		//Pi.main(args);
 	}
 }

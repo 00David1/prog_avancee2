@@ -11,3 +11,100 @@ java programation_distribuer.WorkerSocket <port>
 on client terminal (programation_partager.Master):
 make
 make run
+
+
+# Rapport sur la Programmation Avancée et la Qualité de Développement
+
+## 1. Introduction
+Ce rapport vise à synthétiser les concepts abordés dans l'image fournie ainsi que les documents sur la qualité de développement logiciel et la programmation avancée. Nous y traiterons de la parallélisation des calculs, de la scalabilité, des modèles de communication entre processus, ainsi que des critères de qualité logicielle.
+
+---
+
+## 2. Parallélisation et Scalabilité
+
+### 2.1 Modèle Master-Worker
+Le modèle Master-Worker est utilisé pour répartir des tâches de calcul sur plusieurs unités de traitement. Le Master divise le travail et l'attribue aux Workers, qui effectuent les calculs et renvoient les résultats.
+
+### 2.2 Scalabilité
+La scalabilité d'un système dépend de sa capacité à augmenter ses performances en fonction du nombre de processeurs. Deux types de scalabilité sont observables :
+- **Scalabilité forte** : Augmentation de la performance jusqu'à une certaine limite, où le système atteint ses capacités maximales.
+- **Scalabilité faible** : Gain de performance plus lent avec l'ajout de processeurs, souvent limité par les communications entre les unités de calcul.
+
+### 2.3 Calcul Matriciel et Parallélisation
+Un exemple d'optimisation est l'utilisation de la parallélisation pour le produit matrice-vecteur. Une répartition des calculs par lignes permet d'améliorer l'efficacité du traitement.
+
+---
+
+## 3. Communication entre Processus
+### 3.1 Modèle Client-Serveur
+Les processus peuvent communiquer via un modèle Client-Serveur, où un serveur gère les requêtes des clients via des sockets. Cela permet une communication efficace entre différentes entités.
+
+### 3.2 Utilisation des Sockets
+L'utilisation des sockets en Java repose sur des flux d'entrée et de sortie pour échanger des données entre les processus. Cela permet d'établir des connexions réseaux robustes.
+
+---
+
+## 4. Qualité de Développement Logiciel
+### 4.1 Qualité en Utilisation
+Selon l'ISO/IEC, la qualité logicielle repose sur plusieurs caractéristiques :
+- **Efficacité** : Réaliser les tâches de manière optimale.
+- **Satisfaction** : Expérience utilisateur et conformité aux attentes.
+- **Fiabilité** : Minimisation des risques et robustesse du système.
+- **Compatibilité** : Intégration et interopérabilité avec d'autres systèmes.
+
+### 4.2 Modèle de Qualité des Produits
+Les critères de qualité du produit incluent :
+- **Adéquation fonctionnelle** : Respect des besoins utilisateurs.
+- **Performance** : Efficacité en termes de ressources et de vitesse.
+- **Maintenabilité** : Facilité de mise à jour et évolutivité du code.
+
+---
+
+## 5. Conclusion
+Ce rapport met en avant les concepts clés liés à la parallélisation des calculs et à la qualité du développement logiciel. Une approche combinant optimisation des performances et respect des normes de qualité permet d'obtenir des systèmes efficaces et fiables. L'utilisation de modèles distribués et de protocoles de communication adaptés est essentielle pour répondre aux exigences des systèmes modernes.
+
+
+
+**Rapport sur le Parallélisme et la Programmation Distribuée**
+
+# 1. Introduction au Parallélisme et à la Programmation Distribuée
+Le parallélisme est une technique permettant d'exécuter plusieurs tâches simultanément afin d'améliorer les performances des programmes. La programmation distribuée repose sur le principe de répartir des tâches sur plusieurs machines communiquant entre elles via un réseau.
+
+# 2. Les Futures et les Callables en Java
+Dans le cadre de l'exécution parallèle, Java propose les **futures** et les **callables** via l'API Concurrent. Un **Future** est une abstraction permettant de suivre l'état d'une tâche asynchrone et de récupérer son résultat lorsqu'il est disponible. Un **Callable** est une interface semblable à Runnable mais pouvant renvoyer une valeur et lever des exceptions.
+
+# 3. Le Modèle Master-Worker
+Le modèle **Master-Worker** consiste à décomposer un problème en sous-tâches exécutées par des workers sous la supervision d'un master.
+- Le **Master** distribue les tâches aux **Workers**.
+- Les **Workers** exécutent leur tâche et renvoient les résultats au **Master**.
+
+Dans l'algorithme de **Monte Carlo**, les workers gèrent chacun une partie du calcul et renvoient les résultats au master qui les agrège.
+
+# 4. AtomicInteger et BlockingQueue
+L'API Concurrent de Java fournit plusieurs outils pour gérer la concurrence :
+- **AtomicInteger** : un entier thread-safe dont les opérations sont atomiques.
+- **BlockingQueue** : une file d'attente bloquante permettant la synchronisation des threads.
+
+# 5. Performance des Programmes Parallèles
+La performance d'un programme parallèle dépend de plusieurs facteurs :
+- **Nombre de processeurs (“p”)** : plus il y en a, plus l'exécution est rapide.
+- **Overhead de communication** : les échanges entre threads/processus ajoutent un coût.
+- **Speedup (Sp)** : métrique mesurant l'amélioration de performance via la parallélisation.
+
+## 5.1 Scalabilité Forte vs Scalabilité Faible
+- **Scalabilité forte** : le nombre de tâches reste constant, on augmente le nombre de processeurs.
+- **Scalabilité faible** : la charge de travail augmente avec le nombre de processeurs.
+
+# 6. Communication entre Machines : Sockets Java
+Dans une architecture distribuée, la communication entre machines est essentielle. Java fournit l'API **Socket** permettant d'échanger des messages entre un **client** et un **serveur** via des flux d'entrée/sortie (**InputStream, OutputStream**).
+
+# 7. Expériences et Comparaisons
+Deux implémentations ont été comparées :
+- **Assignment 102** utilisant le **work stealing pool**.
+- **Pi.java** implémentant un modèle **Master-Worker**.
+
+L'étude du speedup a montré que l'écart de performance est plus faible dans **Pi.java** par rapport au **Master-Worker**, notamment à cause du coût de communication en programmation distribuée.
+
+# 8. Conclusion
+La parallélisation et la programmation distribuée permettent d'accélérer les calculs mais introduisent des contraintes de synchronisation et de communication. L'utilisation judicieuse des **futures**, **callables** et des **sockets** permet d'optimiser ces architectures.
+
