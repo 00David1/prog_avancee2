@@ -98,8 +98,8 @@ public class MasterSocket {
 
 			//System.out.println( (Math.abs((pi - Math.PI)) / Math.PI) +" "+ totalCount*numWorkers +" "+ numWorkers +" "+ (stopTime - startTime)); // on ne multiplie plus le totaleCount par numWorker
 
-			try (FileWriter writer = new FileWriter("data/Master_scal_faible_G26_8c.csv", true)) {
-				boolean isFileEmpty = new java.io.File("data/Master_scal_faible_G26_8c.csv").length() == 0;
+			try (FileWriter writer = new FileWriter("data/Master_scal_forte_G26_8c.csv", true)) {
+				boolean isFileEmpty = new java.io.File("data/Master_scal_forte_G26_8c.csv").length() == 0;
 				if (isFileEmpty) {
 					writer.append("Error,Ntot,Threads,Duration\n");
 				}

@@ -1,8 +1,8 @@
 package programation_distribuer;
 
+import programation_partager.Worker;
 import java.io.*;
 import java.net.*;
-import java.util.Random;
 
 /** Worker is a server. It computes PI using the Monte Carlo method. */
 public class WorkerSocket {
@@ -22,7 +22,7 @@ public class WorkerSocket {
         ServerSocket s = new ServerSocket(port);
         System.out.println("Worker started on port " + port);
 
-        while (true) {
+        while (isRunning) {
             Socket soc = s.accept();
             System.out.println("Connected to Master");
 
@@ -36,34 +36,28 @@ public class WorkerSocket {
                     break;
                 }
 
-                int totalCount = Integer.parseInt(message);
-                int insideCount = computeMonteCarlo(totalCount);
-                System.out.println("Computed " + insideCount + " points inside quarter-circle");
-                writer.println(insideCount);
+                try {
+                    int totalCount = Integer.parseInt(message);
+                    System.out.println("Received totalCount = " + totalCount);
+
+                    Worker worker = new Worker(totalCount);
+                    long insideCount = worker.call();
+
+                    System.out.println("Computed " + insideCount + " points inside quarter-circle");
+                    writer.println(insideCount);
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid number format: " + message);
+                    writer.println("ERROR");
+                }
             }
 
             reader.close();
             writer.close();
             soc.close();
-
-            if (!isRunning) break;
         }
 
         s.close();
         System.out.println("Worker shutting down.");
-    }
-
-    /** Monte Carlo simulation to estimate Pi */
-    private static int computeMonteCarlo(int totalCount) {
-        int inside = 0;
-        Random rand = new Random();
-
-        for (int i = 0; i < totalCount; i++) {
-            double x = rand.nextDouble();
-            double y = rand.nextDouble();
-            if (x * x + y * y <= 1) inside++;
-        }
-
-        return inside;
     }
 }
