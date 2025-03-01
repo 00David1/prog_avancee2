@@ -20,6 +20,9 @@ Le programme estime la valeur de π en générant aléatoirement des points dans
 - Classe Master : 
 - classe Worker : 
 
+### Shémat UML :
+![img.png](documentation/uml/Uml_PiJava.png)
+
 ## Assignement 102 :
 
 ### Objectif du programme : 
@@ -30,27 +33,19 @@ Le programme estime la valeur de π en générant aléatoirement des points dans
 - Classe Assignement102 : 
 
 ### Shémat UML : 
-![alt text](documentation/uml/Uml_Pi_Assignement102.png)
+![img.png](documentation/uml/Uml_Pi_Assignement102.png)
 
-## Master 
+## MasterWorker 
 
 ### Objectif du programme : 
 
 ### Décomposition du progamme : 
 
 - Classe Master :
-
-### Shémat UML : 
-
-## Worker 
-
-### Objectif du programme : 
-
-### Décomposition du progamme : 
-
 - Classe Worker :
 
-### Shémat UML : 
+### Shémat UML :
+![img.png](documentation/uml/Uml_Master_Worker.png)
 
 # Calcule du speedup
 
@@ -62,11 +57,11 @@ Le programme estime la valeur de π en générant aléatoirement des points dans
 
 - **Scalabilité forte** : le nombre de tâches reste constant, on augmente le nombre de processeurs. Augmentation de la performance jusqu'à une certaine limite, où le système atteint ses capacités maximales.
 
-![alt text](image-3.png)
+![img.png](documentation/image/scal_forte.png)
 
 - **Scalabilité faible** : la charge de travail augmente proprtionelelment avec le nombre de processeurs. 
 
-![alt text](image-4.png)
+![img.png](documentation/image/scal_faible.png)
 
 
 ## Scalabilité forte 
@@ -91,7 +86,7 @@ Pour chaque lancer de teste avec un nombre de procésseur j'ai fais un totale de
 | 2.471229E-05 | 120000000 | 12      | 6741.00  |
 
 - Graphe :
-![alt text](documentation/graph/Assignement102_scal_forte.png)
+![img.png](documentation/graph/Assignement102_scal_forte.png)
 
 - Interprétation :
 
@@ -120,7 +115,7 @@ Pour chaque lancer de teste avec un nombre de procésseur j'ai fais un totale de
 | 1.168305018265772e-05  | 1200000000 | 12      | 1804.8   |
 
 - Graphe :
-![alt text](documentation/graph/Pi_scal_forte.png)
+![img.png](documentation/graph/Pi_scal_forte.png)
 
 - Interprétation :
 
@@ -184,7 +179,7 @@ Pour chaque lancer de teste avec un nombre de procésseur j'ai fais un totale de
 | 2.9817626893769117e-05 | 120000000 | 12      | 8835.4  |
 
 - Graphe :
-![alt text](documentation/graph/Assignement102_scal_faible.png)
+![img.png](documentation/graph/Assignement102_scal_faible.png)
 
 - Interprétation :
 
@@ -204,7 +199,7 @@ Pour chaque lancer de teste avec un nombre de procésseur j'ai fais un totale de
 | 1.4967513059373683e-05 | 120000000 | 12      | 2152.0  |
 
 - Graphe :
-![alt text](documentation/graph/Pi_scal_faible.png)
+![img.png](documentation/graph/Pi_scal_faible.png)
 
 - Interprétation :
 
