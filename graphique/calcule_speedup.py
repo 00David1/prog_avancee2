@@ -74,8 +74,12 @@ def plot_speedup_faible(csv_file):
 
 #Assignement
 #plot_speedup_forte("data/Assignment102_scal_forte_G26_8c.csv")
-plot_speedup_faible("data/Assignment102_scal_faible_G26_8c.csv")
+#plot_speedup_faible("data/Assignment102_scal_faible_G26_8c.csv")
 
 #Pi
 #plot_speedup_forte("data/Pi_scal_forte_G26_8c.csv")
 #plot_speedup_faible("data/Pi_scal_faible_G26_8c.csv")
+
+#MasterWorker
+#plot_speedup_forte("data/Master_scal_forte_G26_8c.csv")
+plot_speedup_faible("data/Master_scal_faible_G26_8c.csv")

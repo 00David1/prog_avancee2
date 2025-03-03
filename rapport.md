@@ -1,24 +1,55 @@
 # Introduction 
 
+# Architecture matérielle 
+
+## PC personnel
+- Prcesseur : AMD Ryzen 5 5600H
+- Carte graphique : AMD Radeon
+- Nombre de coeur physique : 6 
+- Nombre de coeur logique : 12
+- Mémoire RAM : 16 GO
+
+## PC sale G26
+- Prcesseur :
+- Carte graphique :
+- Nombre de coeur :
+- Mémoire RAM :
+
+## Le Multithreading
+Le multithreading permet à un processeur de gérer plusieurs tâches simultanément en divisant un cœur physique en plusieurs cœurs logiques (threads). Bien que cela améliore les performances en optimisant l'utilisation des ressources, un cœur logique ne double pas réellement la puissance d'un cœur physique. En effet, les threads partagent les mêmes unités de calcul, ce qui peut limiter l’efficacité sur certaines tâches intensives. Ainsi, 12 cœurs logiques (avec 6 cœurs physiques) ne sont pas aussi puissants que 12 cœurs physiques, bien que cela reste avantageux pour le multitâche et certaines applications parallèles.
+
+
 # Calcule de Pi
+
+![img.png](documentation/image/generation_points.png)
 
 # Methode monte carlo 
 La méthode de Monte Carlo est une technique de calcul probabiliste utilisée pour estimer des quantités numériques complexes en s’appuyant sur des simulations aléatoires. Elle repose sur le principe que, en générant un grand nombre d’échantillons aléatoires et en analysant leur comportement, on peut obtenir une approximation fiable d’une valeur mathématique ou physique difficile à calculer analytiquement.
 
-Dans nos traveaux nous avons utiliser cette méthode pour l’estimation de π en générant aléatoirement des points dans un graphe avec un quart de cercle déssiner sur celui-ci, le but etant de calculer la proportion des point qui tombent dans le cercle, Les point sont donc gnérer aléatoirement sur une zonne carré du graphe, 75% d'entre eux sont generer dans le cerlce et 25% en dehors.
+Dans nos traveaux nous avons utiliser cette méthode pour l’estimation de π en générant aléatoirement des points dans un graphe avec un quart de cercle déssiner sur celui-ci, le but etant de calculer la proportion des point qui tombent dans le cercle, Les point sont donc gnérer aléatoirement sur une zonne carré du graphe. Les point on 75% de chance d'être generer dans le cerlce et 25% de chance d'être generer en dehors.
 
 # L'architecture du projet 
 
+Les trois implémentation anlysées sont: 
+
+- Pi.java : Implémentation basée sur un modèle maître-travailleur en mémoire partagée.
+
+- Assignement102.java : Une autre approche en mémoire partagée, avec différents paramètres d'exécution.
+
+- MasterWorker.java : Implémentation en mémoire distribuée, avec communication inter-processus.
+
 ## Pi.java 
+Le programme estime la valeur de π en générant aléatoirement des points dans un carré unité [0,1]×[0,1] et en comptant combien tombent à l’intérieur d’un quart de cercle inscrit dans ce carré. 
+
 
 ### Objectif du programme : 
-Le programme estime la valeur de π en générant aléatoirement des points dans un carré unité [0,1]×[0,1] et en comptant combien tombent à l’intérieur d’un quart de cercle inscrit dans ce carré. 
+Estimer Pi en distribuant le calcul sur plusieurs threads via un exécuteur de threads.
 
 ### Décomposition du progamme : 
 
-- Classe Pi :
-- Classe Master : 
-- classe Worker : 
+- Classe Pi : Point d'entrée, initialise le calcul.
+- Classe Master : Gère la création des threads et collecte les résultats.
+- classe Worker : Effectue la simulation Monte Carlo sur un sous-ensemble de points.
 
 ### Shémat UML :
 ![img.png](documentation/uml/Uml_PiJava.png)
@@ -26,11 +57,12 @@ Le programme estime la valeur de π en générant aléatoirement des points dans
 ## Assignement 102 :
 
 ### Objectif du programme : 
+Cette implémentation utilise la classe PiMonteCarlo pour générer des points de manière concurrente et calculer une approximation de Pi.
 
 ### Décomposition du progamme : 
 
-- Classe PiMonteCarlo :
-- Classe Assignement102 : 
+- Classe PiMonteCarlo : Utilise AtomicInteger pour éviter les conditions de course. Exécute des tâches concurrentes avec un pool de threads WorkStealingPool. Met à jour la valeur de Pi après la fin des threads.
+- Classe Assignement102 : Initialise et exécute le programme en parallèle. Mesure la durée d'exécution et stocke les résultats dans un fichier CSV.
 
 ### Shémat UML : 
 ![img.png](documentation/uml/Uml_Pi_Assignement102.png)
@@ -38,31 +70,57 @@ Le programme estime la valeur de π en générant aléatoirement des points dans
 ## MasterWorker 
 
 ### Objectif du programme : 
+Cette implémentation utilise une architecture distribuée où un Master envoie des tâches aux Workers via des sockets. Chaque Worker effectue une simulation Monte Carlo et retourne le résultat au Master, qui agrège les valeurs pour estimer Pi.
 
 ### Décomposition du progamme : 
 
-- Classe Master :
-- Classe Worker :
+- Classe MasterSocket : Initialise un ensemble de connexions vers les Workers via des sockets. Envoie à chaque Worker une charge de travail équitablement répartie. Agrège les résultats reçus et calcule Pi. Stocke les résultats dans un fichier CSV pour analyse des performances.
+- Classe WorkerSocket : Attente de connexions entrantes depuis le Master. Exécute l'algorithme Monte Carlo sur les données reçues. Renvoie le nombre de points dans le quart de cercle au Master.
 
 ### Shémat UML :
 ![img.png](documentation/uml/Uml_Master_Worker.png)
 
-# Calcule du speedup
+### Les Sockets : 
+Les sockets untilisent les méthodes send et receive pour la communication. 
+Ce sont donc des objets qui contient une aprdesse IP avec un port, un flux d'entrer (inputStream) et un flux de sortie (outPutStream)
 
-## Définition
+![img.png](documentation/image/socket.png)
 
-**Speedup :** Le speedup est 
+L'échange de données entre le Master et les Workers repose sur l'utilisation des sockets TCP/IP. Cette approche permet une exécution distribuée des calculs tout en assurant une communication efficace entre les processus. Voici les principales étapes :
+1) Initialisation : 
+- Le Master ouvre des connexions vers les différents Workers.
+- Chaque Worker écoute sur un port spécifique en attente de tâches.
+2) Distribution : 
+- Le Master envoie à chaque Worker un nombre d'itérations à effectuer.
+- Chaque Worker effectue le calcul et renvoie le nombre de points tombant dans le quart de cercle.
+3) Agregation des résultats :  
+- Le Master reçoit les résultats de chaque Worker.
+- Il agrège les valeurs et calcule l'approximation finale de Pi.
 
-**Scalabilité :** La scalabilité d'un système dépend de sa capacité à augmenter ses performances en fonction du nombre de processeurs. Deux types de scalabilité sont observables :
 
-- **Scalabilité forte** : le nombre de tâches reste constant, on augmente le nombre de processeurs. Augmentation de la performance jusqu'à une certaine limite, où le système atteint ses capacités maximales.
+## Calcule du speedup
+
+**Speedup :** Le speedup est définie comme : S(p) = T(1)/T(p), où T(1) est le temps d'exécution en séquentiel et T(p) est le temps d'exécution avec  threads.
+
+**Scalabilité :** La scalabilité mesure la capacité du programme à améliorer ses performances en fonction du nombre de processeurs. Deux types de scalabilité sont observables :
+
+- **Scalabilité forte** : La charge de travail reste constant et le nombre de threads augmente. Augmentation de la performance jusqu'à une certaine limite, où le système atteint ses capacités maximales.
 
 ![img.png](documentation/image/scal_forte.png)
 
-- **Scalabilité faible** : la charge de travail augmente proprtionelelment avec le nombre de processeurs. 
+- **Scalabilité faible** : la charge de travail augmente proprtionelelment avec le nombre de threads. 
 
 ![img.png](documentation/image/scal_faible.png)
 
+## Programation en mémoire partagée VS distribuée
+
+**En mémoire partagée** : La programmation en mémoire partagée consiste à faire communiquer plusieurs processus ou threads à travers un **espace mémoire commun**. Tous les threads ou processus accèdent aux mêmes données, ce qui facilite les échanges, mais nécessite des mécanismes de synchronisation (comme les mutex ou les sémaphores) pour éviter les conflits d'accès. C'est une approche que l'on utilise quand on programme sur une seule machine par exemple.
+
+**En mémoire distribuée** : la programation en mémoire distribuée chaque processus possède sa propre mémoire et communique avec les autres via un réseau en échangeant des messages, ce qui améliore la scalabilité mais ralentit les échanges.. Ce modèle est couramment utilisé dans les clusters et supercalculateurs. 
+
+Le choix entre ces modèles dépend du type d’application et des ressources disponibles.
+
+# Analyse des performances
 
 ## Scalabilité forte 
 
@@ -135,6 +193,7 @@ Pour chaque lancer de teste avec un nombre de procésseur j'ai fais un totale de
 |  | 120000000 | 12      |   |
 
 - Graphe :
+  ![img.png](documentation/graph/Master_scal_forte.png)
 
 - Interprétation :
 
@@ -219,6 +278,7 @@ Pour chaque lancer de teste avec un nombre de procésseur j'ai fais un totale de
 |  | 120000000 | 12      |   |
 
 - Graphe :
+![img.png](documentation/graph/Master_scal_faible.png)
 
 - Interprétation :
 
